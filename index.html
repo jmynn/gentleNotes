@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Нежная библиотека</title>
+
+    <!--!!--THEME-COLOR--!!-->
+    <meta name="theme-color" content='#FFF1F9'>
+    <!--!!--ICONS--!!-->
+    <link type="image/png" sizes="32x32" rel="icon" href="img/favicon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script type="text/javascript" src="https://vk.com/js/api/share.js?93" charset="windows-1251"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- ?header -->
+<header class="header">
+	<div class="header__row">
+		<div class="header__column">
+			<div class="header__logo">
+<div class="logo">
+    <span>gentle</span>Notes
+</div>			</div>
+		</div>
+		<div class="header__column">
+			<ul class="header__list list">
+				<li class="list__item">
+					<a href="/" data-link>Главная</a>
+				</li>
+				<li class="list__item btn-pink" id="login-btn">
+					<a href="/login" data-link>Войти</a>
+				</li>
+			</ul>
+		</div>
+		<div class="header__column" id="burger-menu">
+			<span></span>
+			<span></span>
+			<span></span>
+		</div>
+	</div>
+</header>
+        <div class="container">
+            <div class="content" id="root">
+            </div>
+        </div>
+        <!-- ?footer -->
+<footer class="footer">
+    <div class="footer__row">
+        <div class="footer__column column-footer">
+            <div class="column-footer__body">
+                <div class="column-footer__block block">
+<div class="logo">
+    <span>gentle</span>Notes
+</div>                </div>
+                <div class="column-footer__block block">
+                    <ul class="block__list">
+                        <li><a href="/blog" class="block__blog" data-link>Наш блог</a></li>
+                        <li><a href="/dev" data-link>Для разработчиков</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer__column column-footer">
+            <div class="column-footer__body">
+                <div class="column-footer__block block">
+                    <span>By Jmynn</span>
+                </div>
+                <div class="column-footer__block block">
+                    <img src="img/icons/Web.svg" alt="web"><span>Russia</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>    </div>
+    <!-- script -->
+    
+    <script type="module" src="scripts/script.js"></script>
+    <script type="module" src="scripts/route.js"></script>
+</body>
+</html>
