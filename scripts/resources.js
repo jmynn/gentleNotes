@@ -478,12 +478,12 @@ export const personalSections = { //ok
             .then(res => res.json())
             .then(({recordset}) => recordset)
             .then(([obj]) => Number(obj?.note_state) ?? Number(obj?.book_state))
-            .then(state => { console.log(state)
-                if(state === 1) {
+            .then(status => { 
+                if(status === 1) {
                     card.style.background = '#98b1986b'
                     return
                 }
-                if(state === 4) {
+                if(status === 4) {
                     card.style.background = '#FFF1F9'
                     return
                 }
