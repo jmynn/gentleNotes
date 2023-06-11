@@ -31,19 +31,18 @@ const styles = {
     `
 }
 const book = {
-    bid : -1,
-    link : null
+    bid : -1, //id книги 
+    link : null //ссылка на хранилище книги
 }
 //===========================================================
-export function fetchBookReader(){ 
+export function fetchBookReader(){ // ф-я вывода интерфейса страницы чтения книги
     book.bid = +SS.getItem('bid')
-    bookParser()
-    // setMarkup()
+    bookParser() // ф-я парсинга книги 
     return `<div id='loader'>
     </div>`
 }
-async function bookParser(){
-    await fetch(document.location.href, {
+async function bookParser(){ // ф-я парсинга книги 
+    await fetch(document.location.href, { //пост-запрос на сервер для получения ссылки на хранилище с книгой
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=utf-8'
@@ -56,18 +55,18 @@ async function bookParser(){
     .then(data => data.json())
     .then(([obj]) => book.link = obj?.book_book ?? null)
 
-    await fetch(book.link)
+    await fetch(book.link) // гет-запрос к харнилищу для получения файла книги
     .then(blob => blob.blob())
     .then(async blob => [await fetch(book.link).then(xml => xml.text()), blob])
     .then(([xml, blob]) => {   
 
-        const parsedText = new DOMParser().parseFromString(xml, 'text/xml')
-        const encode  = new XMLSerializer().serializeToString(parsedText).split('encoding="')[1].split('"?>')[0]
+        const parsedText = new DOMParser().parseFromString(xml, 'text/xml') //парсинг строки в XML DOM 
+        const encode  = new XMLSerializer().serializeToString(parsedText).split('encoding="')[1].split('"?>')[0] //получение кодировки книги
 
-        blob.arrayBuffer()
+        blob.arrayBuffer() 
         .then(data => new TextDecoder(encode).decode(data))
         .then(decodedText => new DOMParser().parseFromString(decodedText, 'text/xml'))
-        .then(decodedAndParsedText => {
+        .then(decodedAndParsedText => { //вывод книги на страницу
             if(document.getElementById('root').querySelector('#loader')) document.getElementById('root').removeChild(document.getElementById('loader'))
             decodedAndParsedText.querySelectorAll('a').forEach(link => link.parentNode.removeChild(link))
             decodedAndParsedText.querySelectorAll('myheader').forEach(item => item.parentNode.removeChild(item))
@@ -100,23 +99,23 @@ async function bookParser(){
                 }
             })
             root.setAttribute('data-section', 'reader')
-            createIcon()
-            createBookmark()
-            createHomeIcon()
-            checkAndRecoveryStateReader()
-            checkPositionAndScrollTo()
-            createNewNoteIcon(document.querySelector('[data-id="js-div"]')?.children ?? null)
+            createIcon() //создание кнопки настроек
+            createBookmark() //созданик кнопки сохранения процента прочитанного материала
+            createHomeIcon() // создание кнопки возврата на главную страницу
+            checkAndRecoveryStateReader() //восстановление примененной стилистики страницы чтения книги
+            checkPositionAndScrollTo() // возврат на позицию на которой остановились при предыдущем чтении книги
+            createNewNoteIcon(document.querySelector('[data-id="js-div"]')?.children ?? null) // создание кнопки создания быстрой заметки во время чтения
         }) 
     })
     .catch(err => console.log(err))
 }
-function closeSettings(){
+function closeSettings(){ //ф-я закрытия окна настроек страницы чтения книги
     if(document.getElementById('js-si')) return
     const settings = document.getElementById('js-settings-panel')
     settings.parentNode.removeChild(settings)
     createIcon()
 }
-function addClass(className){
+function addClass(className){ //функция применения стилей в зависимости от изменения настроек страницы чтения книги
     const parent = root.parentNode
 
     parent.classList.add('reader')
@@ -128,7 +127,7 @@ function addClass(className){
     localStorage.setItem('rtc', className)
     closeSettings()
 }
-function setFontSize(size){
+function setFontSize(size){ //изменение размера шрифта в зависимости от изменения настроек страницы чтения книги
     const parent = root.parentNode
 
     parent.classList.add('reader')
@@ -140,7 +139,7 @@ function setFontSize(size){
     localStorage.setItem('rsc', size)
     closeSettings()
 }
-function createSettingsPanel(){
+function createSettingsPanel(){ //создание окна настроек
     const settingsPanel = document.createElement('div')
     settingsPanel.id = 'js-settings-panel'
     const containerPanel = document.createElement('div')
@@ -206,7 +205,7 @@ function createSettingsPanel(){
     root.insertAdjacentElement('beforeend', settingsPanel)
 
 }
-function createIcon(){
+function createIcon(){ //создание кнопки настроек
     const icon = document.createElement('div')
     const img  = document.createElement('img')
     icon.classList.add('setting-icon')
@@ -221,13 +220,13 @@ function createIcon(){
     })
     document.querySelector('.wrapper').insertAdjacentElement('beforeend', icon)
 }
-function checkAndRecoveryStateReader(){
+function checkAndRecoveryStateReader(){ //восстановление примененной стилистики страницы чтения книги
     const rtc = localStorage.getItem('rtc')
     const rsc = localStorage.getItem('rsc')
     if(rtc) addClass(rtc)
     if(rsc) setFontSize(rsc)
 }
-async function savePosition(){
+async function savePosition(){ //ф-я сохранения процента прочитанного материала
     const scrollPercentage = window.pageYOffset / document.body.scrollHeight * 100 
         localStorage.setItem(`psw-bid-${book.bid}`, scrollPercentage)
         await fetch('/upload_bookmark', {
@@ -243,7 +242,7 @@ async function savePosition(){
             })
         }).catch(e => console.log(e)) //??
 }
-function createBookmark(){
+function createBookmark(){ //созданик кнопки сохранения процента прочитанного материала
     const icon = document.createElement('div')
     const img  = document.createElement('img')
     icon.classList.add('bookmark-icon')
@@ -254,7 +253,7 @@ function createBookmark(){
     icon.addEventListener('click', savePosition)
     document.querySelector('.wrapper').insertAdjacentElement('beforeend', icon)
 }
-async function checkPositionAndScrollTo(){
+async function checkPositionAndScrollTo(){ //ф-я проверки и скролла на сохраненную ранее позицию при открытии книги
     localStorage.getItem(`psw-bid-${book.bid}`) 
     ? scrollTo({top: +localStorage.getItem(`psw-bid-${book.bid}`) / 100 * document.body.scrollHeight}) 
     : await fetch('/upload_bookmark', {
@@ -275,7 +274,7 @@ async function checkPositionAndScrollTo(){
     })
     .catch(e => console.error(e))
 }
-function createHomeIcon(){
+function createHomeIcon(){ // создание кнопки возврата на главную страницу
     const icon = document.createElement('div')
     const img  = document.createElement('img')
     icon.classList.add('home-icon')
@@ -291,7 +290,7 @@ function createHomeIcon(){
     })
     document.querySelector('.wrapper').insertAdjacentElement('beforeend', icon)
 }
-function createNewNoteIcon(array=null){ 
+function createNewNoteIcon(array=null){ // создание кнопки создания быстрой заметки во время чтения
     const icon = document.createElement('div')
     const img  = document.createElement('img')
     icon.classList.add('new-note-icon')

@@ -6,7 +6,7 @@ const optionsAnimate = {
     rootMargin: '0px',
     threshold: 0.001
 }
-const observerAnimate = new IntersectionObserver((entries, observer) => {
+const observerAnimate = new IntersectionObserver((entries, observer) => { // наблюдатель пересечения элементов с анимацией
     entries.forEach(entry =>{ 
         if(entry.isIntersecting){
             entry.target.classList.add('animate__animated', 'animate__fadeInUp')
@@ -19,7 +19,7 @@ const optionsLazyLoad = {
     rootMargin: '0px',
     threshold: 0.3
 }
-const LazyLoad = new IntersectionObserver((entries, observer) => {
+const LazyLoad = new IntersectionObserver((entries, observer) => { // наблюдатель пересечения элементов подлежщих медленной загрузки
     entries.forEach(entry =>{ 
         if(entry.isIntersecting){
             entry.target.src = entry.target.dataset.src

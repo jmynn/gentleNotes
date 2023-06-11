@@ -5,18 +5,18 @@ import { animates, lazyLoading } from "./intersectionObserver.js"
 import { registerOrLoginListener } from "./registerAndLoginListener.js"
 import { jl } from "./jl.js"
 
-if(!returnBMLValue(false)){
+if(!returnBMLValue(false)){ // изменения состояния бургер меню
     returnBMLValue(true)
-    burgerMenu.addEventListener('click', () => burgerMenuClick())
+    burgerMenu.addEventListener('click', () => burgerMenuClick()) //обработчик события клика по бургре меню
 }
 
-export const route = event => {
+export const route = event => { //ф-я перехода на другую страницу
     event = event || window.event
     event.preventDefault()
-    window.history.pushState({}, "", event.target.href)
-    handleLocation()
+    window.history.pushState({}, "", event.target.href) //смена  адреса в строке и истории
+    handleLocation() //загрузка шаблона страницы
 }
-const routes = {
+const routes = { //пути страниц и функции отображения
     "ErrorPage": ErrorPage,
     "/": Main,
     "/login" : Login,
@@ -28,7 +28,7 @@ const routes = {
     "/personal" : Personal,
     "/jl" : JL
 }
-const handleLocation = async () => { 
+const handleLocation = async () => { //ф-я загрузки интерфейса в зависимости от адреса страницы на которую перешли
     burgerMenu.classList.contains('active') ? closeMenu('handleLocation') : null
     //===========================================================
     const path = window.location.pathname
@@ -36,7 +36,7 @@ const handleLocation = async () => {
     const html = routePage()
     root.innerHTML = html
     //===========================================================
-    scrollTo(0, 0)
+    scrollTo(0, 0) //скролл страниы на самую верхнюю позицию
     //===========================================================
     if(root.getAttribute('data-section') && path !== "/bookreader") {
         document.querySelector('.container').className = 'container'
@@ -47,7 +47,7 @@ const handleLocation = async () => {
         document.getElementById('js-nni')?.parentNode.removeChild(document.getElementById('js-nni'))
     }
     //================main=======================================
-    path === "/" ? animates() : null
+    path === "/" ? animates() : null //активация анимаций на главной странице
     //================login======================================
     if(path === "/login") {
         if(showWarningMessage('login')) return
@@ -99,9 +99,9 @@ const handleLocation = async () => {
     //===========================================================
     path === '/jl' ? jl() : null
     //===========================================================
-    if(SS.getItem('user-hash') && !document.getElementById('js-ei')) createIconForExit()
-    document.querySelectorAll('[data-link]').forEach(item => item.onclick = route)
-    SS.getItem('role') ? document.getElementById(ID.loginButton).style.display = "none" : document.getElementById(ID.loginButton).style.display = "flex"
+    if(SS.getItem('user-hash') && !document.getElementById('js-ei')) createIconForExit() //ф-я создания кнопки выхода из аккаунта
+    document.querySelectorAll('[data-link]').forEach(item => item.onclick = route) //обаработчик перехода по ссылкам
+    SS.getItem('role') ? document.getElementById(ID.loginButton).style.display = "none" : document.getElementById(ID.loginButton).style.display = "flex" //скрытие и показ кнокп и "Войти" в зависимости от авторизации пользователя
 }
 window.onpopstate = handleLocation
 window.route = route

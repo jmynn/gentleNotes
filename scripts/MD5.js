@@ -1,4 +1,4 @@
-export var MD5 = function (d) {
+export var MD5 = function (d) { //ф-ия алгоритма хеширования MD5
 	var r = M(V(Y(X(d), 8 * d.length)));
 	return r.toLowerCase();
 };

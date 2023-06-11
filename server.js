@@ -22,20 +22,19 @@ const sqlConfig = {
     idleTimeoutMillis: 30000
   },
   options: {
-    encrypt: true, // for azure
-    trustServerCertificate: true // change to true for local dev / self-signed certs
+    encrypt: true, 
+    trustServerCertificate: true 
   }
 }
 
 let pool = null;
-(async () => pool = await sql.connect(sqlConfig))()
+(async () => pool = await sql.connect(sqlConfig))() //создание подключения к БД
 
-
-const hashCode = s => {
+const hashCode = s => { //ф-я хэширования данных
     for(var i = h = 0; i < s.length; i++) h = Math.imul(31,h) + s.charCodeAt(i) | 0
     return h
 }
-async function uploadFiles(req, res) {  
+async function uploadFiles(req, res) { //ф-я загрузки данных в БД и хранилище  
     let {type, user_hash, ...rest} = req.body
     await addNewDataToUserFolders(type, user_hash, rest, req.file)
         .then(() => res.sendStatus(200))
@@ -47,24 +46,26 @@ async function uploadFiles(req, res) {
 app.use('/', express.static(path.resolve(__dirname)))
 app.get("/*", (req, res) => res.sendFile(path.resolve(__dirname, "index.html")))
 //*============FETCH=====================================
-app.post('/blog', async (req, res) => res.json(await new sql.Request().query(`select * from posts order by id_post desc`))) //ok
-app.post('/login', jsonParser, async (req, res) => { //ok
+app.post('/blog', async (req, res) => res.json(await new sql.Request().query(`select * from posts order by id_post desc`))) //ok //отправка данных из БД на страницу "наш блог"
+app.post('/login', jsonParser, async (req, res) => { //ok //сверка присланных логина и паролей, фиксация времени захода в аккаунт
     const enterDate = +Date.now()
     const {login, password} = req.body
     try{
-        // const {recordset} = await pool.request().query(`select [user_hash], [user_role] from users where [user_login]='${login}' and [user_password]='${password}'`)
-        const {recordset} = await new sql.Request().query(`select [u_id], [user_hash], [user_role] from users where [user_hash]='${md5(`${login}${password}`)}'`) //? 
+        const {recordset} = await new sql.Request()
+        .query(`select [u_id], [user_hash], 
+        [user_role] from users where [user_hash]='${md5(`${login}${password}`)}'`) //? 
         const {u_id} = recordset[0]
 
-        await new sql.Request().query(`insert into users_log ([u_id], [user_enterDate], [user_exitDate], [user_differentTime]) values (${u_id}, ${enterDate}, ${0}, ${0})`) 
+        await new sql.Request()
+        .query(`insert into users_log ([u_id], [user_enterDate], 
+            [user_exitDate], [user_differentTime]) values (${u_id}, ${enterDate}, ${0}, ${0})`) 
         res.status(200).send(recordset)
     }
     catch(err){
-        // console.log(err)
         res.status(400).send('unexpected error login')
     }
 }) 
-app.post('/register', jsonParser, async (req, res) => { //ok
+app.post('/register', jsonParser, async (req, res) => { //ok //проверка на то, что такого пользователя не существует. создание индивидуального хранилища, занесение данных в БД
     const {login, password} = req.body
 
     if(login === undefined || password === undefined) return
@@ -90,7 +91,8 @@ app.post('/register', jsonParser, async (req, res) => { //ok
             return [stateObject]
         })
         .then(async ([finalStateObject, hash=null]) => {
-            let {recordset} = await new sql.Request().query(`select [user_role],[user_hash] from users where [user_hash]='${hash}'`) 
+            let {recordset} = await new sql.Request()
+            .query(`select [user_role],[user_hash] from users where [user_hash]='${hash}'`) 
             finalStateObject.data = recordset[0]
 
             await checkAndCreateFolderForUserInStorage(hash) 
@@ -101,15 +103,15 @@ app.post('/register', jsonParser, async (req, res) => { //ok
             console.log(err)
             res.status(400).send('unexpected error register')
         })
-}) 
-app.post('/personal', jsonParser, async (req, res) => { //ok  
+})
+app.post('/personal', jsonParser, async (req, res) => { //ok // отправка данных в зависимости от данных авторизованного пользователя 
     const {user_hash, path, action, id, title} = req.body
 
     if(user_hash === null) {
         res.status(200).send({stateData : 'EMPTY'}) //*
         return
     }
-    if(!action ?? action === null){
+    if(!action ?? action === null){ //отправка данных для заполнения разделов в ЛК
         if(path === "notes"){
             await new sql.Request().query(`select * from notes_${user_hash} order by note_id desc`, (err, result) => {
                 if(err) {
@@ -129,7 +131,7 @@ app.post('/personal', jsonParser, async (req, res) => { //ok
             })
         }
     }
-    if(action === 'delete'){
+    if(action === 'delete'){ //удаление объекта в ЛК
         try{
             await new sql.Request().query(`delete ${path}_${user_hash} where ${path.substring(0, path.length-1)}_id=${Number(id)} and ${path.substring(0, path.length-1)}_title=N'${title}'`)
             res.sendStatus(200)
@@ -145,7 +147,7 @@ app.post('/personal', jsonParser, async (req, res) => { //ok
             res.sendStatus(400)
         }
     }
-    if(action === 'change-category-book'){
+    if(action === 'change-category-book'){ //изменение категории для книг
         const {state} =  req.body
         const stateString = state.toString()
         const regexp = new RegExp('[0-5]')      
@@ -157,7 +159,7 @@ app.post('/personal', jsonParser, async (req, res) => { //ok
             res.sendStatus(400)
         }
     }
-    if(action === 'change-category-note'){
+    if(action === 'change-category-note'){ //изменение категории для заметок
         const {state} =  req.body
         const stateString = state.toString()
         const regexp = new RegExp('[0-5]')      
@@ -170,17 +172,16 @@ app.post('/personal', jsonParser, async (req, res) => { //ok
         }
     }
 }) 
-app.post('/dev', jsonParser, async (req, res) => { //ok
+app.post('/dev', jsonParser, async (req, res) => { //ok сверка присланных логина и паролей
     const {login, password} = req.body
 
     try{
-        // const {recordset} = await pool.request().query(`select [user_hash], [user_role] from users where [user_login]='${login}' and [user_password]='${password}'`)
         const {recordset} = await new sql.Request().query(`select [user_hash], [user_role] from users where [user_hash]='${md5(`${login}${password}`)}'`) //?
         res.status(200).send(recordset)
     }
     catch(err){res.status(400).send('unexpected error admin')}
 }) 
-app.post('/adminpanel', jsonParser, async (req, res) => {// link_image, author, title, description, id_post
+app.post('/adminpanel', jsonParser, async (req, res) => {// отправка данных для заполненния панели администратора постами
     const {action, id, title} = req.body //?доделать
     
     if(action === null) {
@@ -192,8 +193,8 @@ app.post('/adminpanel', jsonParser, async (req, res) => {// link_image, author, 
         res.sendStatus(200)
     } catch(e) {res.sendStatus(400)}
 })
-app.post("/upload_files", upload.single("book"), uploadFiles)
-app.post('/bookreader', jsonParser, async (req, res) => { 
+app.post("/upload_files", upload.single("book"), uploadFiles) //отправка пришедших данных в хранилище и БД
+app.post('/bookreader', jsonParser, async (req, res) => { //отправка данных на клиент для вывода книги
     const {user_hash, bid} = req.body
     if(user_hash === null) {
         res.status(200).send({stateData : 'EMPTY'}) //*
@@ -207,7 +208,7 @@ app.post('/bookreader', jsonParser, async (req, res) => {
         res.status(200).send(result.recordset)
     })
 })
-app.post('/exitDate', jsonParser, async (req, res) => {
+app.post('/exitDate', jsonParser, async (req, res) => { //фиксирование данных о выходе из аккаунта в БД
     const exitDate = +Date.now()
     const {user_hash} = req.body
     try{
@@ -222,7 +223,7 @@ app.post('/exitDate', jsonParser, async (req, res) => {
         console.log(err)
         res.status(400).send('unexpected error date')}
 })
-app.post('/jl', jsonParser, async (req, res) => {
+app.post('/jl', jsonParser, async (req, res) => { //отправка данных о посещениях пользователей
     const {user_hash} = req.body
     try{
         const {recordset} = await new sql.Request().query(`select * from users where [user_hash]='${user_hash}'`)
@@ -234,7 +235,7 @@ app.post('/jl', jsonParser, async (req, res) => {
         res.sendStatus(400)
     }
 })
-app.post('/upload_bookmark', jsonParser, async (req, res) => {
+app.post('/upload_bookmark', jsonParser, async (req, res) => { //сохранение процента прочитанного материала в определенной книге пользователя
     const {action, user_hash, bid, scrollPercentage} = req.body
     try{
        if(action == 'set'){
@@ -276,7 +277,7 @@ const firebasePostfix = {
 const firebaseApp = initializeApp(firebaseConfig)
 const storage = getStorage(firebaseApp, "gs://project-d-v-1.appspot.com")
 
-async function addNewDataToUserFolders(type, user_hash, {author, title, rate, cover, note, post}, file){ 
+async function addNewDataToUserFolders(type, user_hash, {author, title, rate, cover, note, post}, file){ //добавление данных о книга, постах, заметках в БД и хранилище
     if(user_hash === 'null') return false
 
     const storageRef = ref(storage, `${user_hash}${firebasePostfix.folder}`) 
@@ -308,8 +309,7 @@ async function addNewDataToUserFolders(type, user_hash, {author, title, rate, co
                 .then(url => url)
                 .catch(err => console.log(err)) 
             } else {
-                // if(URLCoverString) uploadCoverRef = URLCoverString
-                uploadCoverRef = `https://firebasestorage.googleapis.com/v0/b/project-d-v-1.appspot.com/o/none.png?alt=media&token=9f6b79b8-98bf-49a3-9b66-ec3af62b945d`
+        uploadCoverRef = `https://firebasestorage.googleapis.com/v0/b/project-d-v-1.appspot.com/o/none.png?alt=media&token=9f6b79b8-98bf-49a3-9b66-ec3af62b945d`
             }
         } catch (e){console.log(e)}
 
@@ -386,7 +386,7 @@ async function addNewDataToUserFolders(type, user_hash, {author, title, rate, co
 //=======================================================
 app.listen(process.env.PORT || 3000, () => console.log("Server running..."))
 //=======================================================
-async function createTablesForUser(hash){ //ok
+async function createTablesForUser(hash){ //ok //ф-я создания таблиц в БД при регистрации нового пользователя
     await new sql.Request().query(`create table notes_${hash}(
         [note_id] [int] IDENTITY(1,1) NOT NULL primary key,
         [user_hash] [nvarchar](max) NOT NULL,
@@ -409,13 +409,12 @@ async function createTablesForUser(hash){ //ok
     )`)
     return true
 } 
-async function searchRequest(login, password){ //ok
-    // let {recordset} = await pool.request().query(`select [user_role] from users where [user_login]='${login}' or [user_password]='${password}'`)
+async function searchRequest(login, password){ //ok //ф-я проверки отсутствия пользователя с похожими логином и паролдем
     let {recordset} = await new sql.Request().query(`select [user_role] from users where [user_hash]='${md5(`${login}${password}`)}'`) //?
     if(recordset.length) return true
     return false
 } 
-async function addUser(login, password){ //ok
+async function addUser(login, password){ //ok //ф-я добавления нового пользователя в базу данных
     const hash = md5(`${login}${password}`)
     await new sql.Request().query(`insert into users ([u_id], [user_login], [user_password], [user_role], [user_hash]) values(${BigInt(Math.abs(hashCode(`${login}${password}`)))}, N'${login}', N'${password}', 'user', '${hash}')`)
     return {
@@ -425,7 +424,7 @@ async function addUser(login, password){ //ok
 } 
 //=======================================================
 //*====================FIREBASE==========================
-async function checkHasDataInUserFolder(type, path, name, extension){ //ok
+async function checkHasDataInUserFolder(type, path, name, extension){ //ok //ф-я проверки существующих объектов в хранилище 
     const searchPath = `${path}${firebasePostfix[type + 's']}`
     const searchFolder = ref(storage, `${path}${firebasePostfix.folder}`)
     const seacrhRef = ref(searchFolder, searchPath)
@@ -433,7 +432,7 @@ async function checkHasDataInUserFolder(type, path, name, extension){ //ok
         items.forEach(item => {if(item.name.toString().includes(`[${type}]${name}${extension}`)) throw "such a file already exists"})
     })
 } 
-async function checkAndCreateFolderForUserInStorage(hash){ //ok
+async function checkAndCreateFolderForUserInStorage(hash){ //ok //создание хранидища для ново-зарегистрированного пользователя
     const storageRef = ref(storage)
     await listAll(storageRef).then(data => {
         data.prefixes.forEach(async folder => {

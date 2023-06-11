@@ -1,9 +1,9 @@
 import { createPopupAndBackdropToShowMessageForCaptcha } from "./resources.js"
 
-let code = null
-let event = new Event('deleteCaptcha', {bubbles:true})
+let code = null //captcha text
+let event = new Event('deleteCaptcha', {bubbles:true}) //custom event закрытия окна
 
-function createCaptcha() {
+function createCaptcha() { //ф-я создания captcha
   document.getElementById('captcha').innerHTML = "";
   let charsArray = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@!#$%^&*"
   let lengthOtp = 4
@@ -24,7 +24,7 @@ function createCaptcha() {
   code = captcha.join("");
   document.getElementById("captcha").appendChild(canv); 
 }
-export function showCaptcha(){
+export function showCaptcha(){ //ф-я отображения captcha 
     createPopupAndBackdropToShowMessageForCaptcha('captcha')
     createCaptcha()
     document.getElementById('form-captcha').addEventListener('submit', e => {
@@ -38,7 +38,7 @@ export function showCaptcha(){
         }
     })
 }
-function deleteCaptcha(){
+function deleteCaptcha(){ //ф-я удаления captcha
     let b = document.getElementById('backdrop')
     let c = document.getElementById('popup-captcha')
     b.parentNode.removeChild(b)

@@ -1,7 +1,7 @@
 import { checkAndInstallIconAccount, fetchToExitDate, ID, openPopup, panelRebuild } from "./resources.js"
 //================SECURE===================================
-let flag = false
-const savedStaticPanelRow = `
+let flag = false //флаг отображения кнопки прокрутки
+const savedStaticPanelRow = ` 
   <div class="panel__column">
     <button class="panel__button panel-button__book" id="js-panel-book">Загрузить книгу</button>
   </div>
@@ -11,15 +11,15 @@ const savedStaticPanelRow = `
   <div class="panel__column">
     <button class="panel__button panel-button__note" id="js-panel-note">Создать заметку</button>
   </div>
-`
+` //шаблон мобильной разметки в ЛК
 //================SECURE===================================
 //=======================================================
-window.addEventListener('load', async () => {
-  const panelRow = document.querySelector('.panel__row')
+window.addEventListener('load', async () => { //обработчик события загрузки страницы
+  const panelRow = document.querySelector('.panel__row') //панель элементов в ЛК
   //*======================================================
-  checkAndInstallIconAccount()
+  checkAndInstallIconAccount() //ф-я проверки состояния авторизации пользователя и смена интерфейса
   //=====serviceWorker=====================================
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) { // подключение сервис воркера для кеширования файлов
       try {
         const reg = await navigator.serviceWorker.register('/sw.js')
       } catch (e) {
@@ -27,7 +27,7 @@ window.addEventListener('load', async () => {
       }
   }
   //=====resize============================================
-  window.addEventListener('resize', e => {
+  window.addEventListener('resize', e => { //обработчик события изменения размера окна
 
     if(window.matchMedia('(max-width: 650px)').matches){
       window.location.pathname === '/personal' ? panelRebuild() : null
@@ -43,7 +43,7 @@ window.addEventListener('load', async () => {
     }
   })
   //=====scroll============================================
-  window.addEventListener('scroll', () =>{
+  window.addEventListener('scroll', () =>{ //обработчик событий скролла окна
     if(window.scrollY >= 300 && !flag){
       flag = !flag
       document.body.insertAdjacentHTML('beforeend', `<div id="arrow-up-btn"></div>`)
@@ -56,7 +56,7 @@ window.addEventListener('load', async () => {
   })
   
 })
-window.addEventListener('unload', async () => {
+window.addEventListener('unload', async () => { //обработчик закрытия вкладки
   if(localStorage.getItem('auth')){
     localStorage.removeItem('auth')
     return

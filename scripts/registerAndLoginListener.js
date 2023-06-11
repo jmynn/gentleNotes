@@ -1,6 +1,6 @@
 import { inputListener, ID_LOGIN_REGISTER, loginOrRegister} from './resources.js'
 //===========================================================
-export function registerOrLoginListener (event){
+export function registerOrLoginListener (event){ //ф-я определения произошедшего события и вызов функции авторизации/регистрации в зависимости от него
     if(event === 'register'){
         //?=================VARIABLES============================
         const regForm = document.forms['regForm']
@@ -29,7 +29,7 @@ export function registerOrLoginListener (event){
         })
     }
     //=======================================================
-    document.querySelectorAll('input').forEach(item => {
+    document.querySelectorAll('input').forEach(item => { //удаление предупреждающей подстветки с полей авторизации при фокусе на них
         item.addEventListener('focus', e => {
             inputListener(e.target)
         })

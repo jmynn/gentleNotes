@@ -1,15 +1,15 @@
 import { showCaptcha } from "./captcha.js"
 import { lazyLoading } from "./intersectionObserver.js"
 
-export const root = document.getElementById("root")
-export const wrapper = document.querySelector('.wrapper')
-export const SS = window.sessionStorage
+export const root = document.getElementById("root") //корневой элемент
+export const wrapper = document.querySelector('.wrapper') // контейнер элементов
+export const SS = window.sessionStorage // хранидище сеанса
 
 let bmL = false //burger menu listener
-let opened = false
-let stateCompletion = false
+let opened = false // состояние бургер меню
+let stateCompletion = false // состояние dragNDrop
 //!=======================================================
-export const sessionKeys = {
+export const sessionKeys = { //намиенование ключей сессии
     loggedIn : 'loggedIn',
     personalState : 'personal-state',
     visited : 'visited',
@@ -18,7 +18,7 @@ export const sessionKeys = {
     role : 'role',
     userHash : 'user-hash'
 }
-export const ID_LOGIN_REGISTER = {
+export const ID_LOGIN_REGISTER = { //id элементов формы авотризации и регистрации
     'logContainer': 'log-container',
     'logInputLogin': 'js-login',
     'logInputPassword': 'js-password',
@@ -30,8 +30,8 @@ export const ID_LOGIN_REGISTER = {
     'mainRegButton': 'js-registr',
     'regInputLogin': 'js-reg-login',
     'regInputPassword': 'js-reg-password',
-}
-export const ID = {
+} 
+export const ID = { //список id всех элементов проекта
     'authorButton' : 'author-btn',
     'loginButton' : 'login-btn',
     'personalAsideBook' : 'js-section-personal-book',
@@ -74,29 +74,20 @@ export const ID = {
     'JL' : 'log-btn',
     'bookCategory' : 'js-book-category'
 }
-export const CLASSES = {
+export const CLASSES = { //список намиенований классов 
     'personalAside' : 'js-aside-personal',
     'panelTitle' : 'panel__title'
 }
-export const dataAttribures = {
-    'rateNote' : 'rateNote',
-    'rateBook' : 'rateBook',
-    'buttonNoteDelete' : 'buttonNoteDelete',
-    'buttonNoteRead' : 'buttonNoteRead',
-    'buttonBookDelete' : 'buttonBookDelete',
-    'buttonBookRead' : 'buttonBookRead',
-    'isActive' : 'isActive'
-}
+//заглушка вместо обложек
 const noneImage = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjZCMDI2RjU4MjcxRDExRTFBNUIxQTIwMEI5NEE1NEZBIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjZCMDI2RjU5MjcxRDExRTFBNUIxQTIwMEI5NEE1NEZBIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NkIwMjZGNTYyNzFEMTFFMUE1QjFBMjAwQjk0QTU0RkEiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NkIwMjZGNTcyNzFEMTFFMUE1QjFBMjAwQjk0QTU0RkEiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6Ri9sqAAAMa0lEQVR42uzdzXXT6B7A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`
 //!=======================================================
-export const burgerMenu = document.getElementById(ID.burgerMenu)
-//================SECURE=================================
-function createHtmlPanelTitle(title){
+export const burgerMenu = document.getElementById(ID.burgerMenu) //объект бургер меню
+function createHtmlPanelTitle(title){ //шаблоны для личного кабинета
     const span = document.createElement('span')
     span.insertAdjacentText('afterbegin', title)
     return span
 }
-function createHtmlPopup(id){
+function createHtmlPopup(id){ //наблоны для модальных окон
     if(id === ID.buttonAddBook) return `
     <div class="popup" id="popup-book">
     <div id="popup-title">Загрузить книгу</div>
@@ -236,7 +227,7 @@ function createHtmlPopup(id){
     `
 }
 //=======================================================//ok??
-function createBackdrop(parent){
+function createBackdrop(parent){ // Ф-я создания бэкдропа
     const backdrop  = document.createElement('div')
     backdrop.id = 'backdrop'
     backdrop.style.cssText = `
@@ -250,22 +241,22 @@ function createBackdrop(parent){
     addListenerBackdrop(backdrop, parent)
     document.body.insertAdjacentElement("afterbegin", backdrop)
 }
-function addListenerBackdrop(el, parent){
+function addListenerBackdrop(el, parent){ //ф-я создания события для бэкдропа
     el.addEventListener('click', e => deleteBackdrop(e.target, parent))
 }
 
-function deleteBackdrop(target, parent){
+function deleteBackdrop(target, parent){ //ф-ия удаления бэкдропа
     target !== null && !document.getElementById(ID.burgerMenu).classList.contains('active') ? deletePopup(target, parent) : closeMenu('backdrop')
 
     const el = document.getElementById('backdrop')
     document.body.removeChild(el)
     removeListenerBackdrop(el, parent) //??target
 }
-function removeListenerBackdrop(el, parent){
+function removeListenerBackdrop(el, parent){ //ф-я удаления события бэкдропа
     el.removeEventListener('click', e => deleteBackdrop(e.target, parent))
 }
 
-function deletePopup(target, parent){
+function deletePopup(target, parent){ //ф-я удаления модального окна
     if(target.id === 'backdrop') {
         const popup = document.querySelector(parent).lastElementChild
         popup.parentNode.removeChild(popup)
@@ -285,7 +276,7 @@ function deletePopup(target, parent){
     target.removeEventListener('click', e => closePopup(e.target, parent))
     document.body.style.overflow = ''
 }
-async function createPopup(id, parent){  
+async function createPopup(id, parent){  //ф-я создания модального окна
     document.body.style.overflow = 'hidden'
     document.querySelector(parent).insertAdjacentHTML('beforeend', createHtmlPopup(id))
     document.getElementById(ID.popupClose).addEventListener('click', e => closePopup(e.target, parent))
@@ -307,11 +298,11 @@ async function createPopup(id, parent){
     }
 }
 
-function closePopup(target, parent){
+function closePopup(target, parent){ //ф-я закрытия модального окна
     deleteBackdrop(target, parent)
 }
 //=======================================================
-async function panelAddWindow(target){
+async function panelAddWindow(target){ //ф-я создания и смены состояния кнопки доабвления книг и заметок, мобильная версия
     let isActive = false
 
     if(target.nodeName === 'DIV'){
@@ -351,7 +342,7 @@ async function panelAddWindow(target){
         panelColumn.removeChild(panelColumn.querySelector('#addButtonPanelWindow'))
       }
 }
-export function panelRebuild(){
+export function panelRebuild(){ //ф-я перестррения макета для мобильных устройств
   const panelRow = document.querySelector('.panel__row')
   const panelTitle = panelRow.children[1].innerHTML
   const buttonAdd = `
@@ -372,8 +363,7 @@ export function panelRebuild(){
   const addButton = document.getElementById('add-panel')
   addButton.addEventListener('click', e => panelAddWindow(e.target))
 }
-//=======================================================
-export function closeMenu(whence){
+export function closeMenu(whence){ //ф-я закрыти бургер меню
     const {menu, btnMenu} = returnElementForBurgerMenu()
     opened = false
 
@@ -384,7 +374,7 @@ export function closeMenu(whence){
 
     document.body.style.overflow = ''
 }
-function openMenu({menu, btnMenu}){
+function openMenu({menu, btnMenu}){ //ф-я открытия бургер меню
     opened = true
 
     btnMenu.classList.add('active')
@@ -394,16 +384,15 @@ function openMenu({menu, btnMenu}){
 
     document.body.style.overflow = 'hidden'
 }
-function returnElementForBurgerMenu(){
+function returnElementForBurgerMenu(){ //ф-я возврата фокусных элементов бургер меню 
     return {
         menu : document.getElementsByClassName('header__column')[1],
         btnMenu : burgerMenu
     }
 }
-//================SECURE=================================
 //=======================================================
-export const personalSections = { //ok 
-    returnHMTL : function(el, state){
+export const personalSections = { //ok //объект личного кабинета пользователя
+    returnHMTL : function(el, state){ //ф-я возврата шаблона карточек в личном кабинете
         return `
         <div class="body-personal__card card" ${el?.book_image !== 'https://firebasestorage.googleapis.com/v0/b/project-d-v-1.appspot.com/o/none.png?alt=media&token=9f6b79b8-98bf-49a3-9b66-ec3af62b945d' && el?.book_id ? 'data-book-card' : ''} id="${el?.book_id ?? el?.note_id}-${el?.note_title ?? el?.book_title}" style="${Number(el?.note_state) === 1||Number(el?.book_state) === 1 
         ? 'background:#98b1986b' 
@@ -436,7 +425,7 @@ export const personalSections = { //ok
             </div>
         </div>
     `},
-    addEventListenerOnButtons : function(bodyPersonal, state){
+    addEventListenerOnButtons : function(bodyPersonal, state){ //ф-я создания обработчиков событий на элементах каротчек в ЛК
         bodyPersonal.querySelectorAll(`[data-button${state}delete]`).forEach(btn => btn.addEventListener('click', () => {
             const card = btn.parentNode.parentNode
             if(!confirm(`Вы уверены, что хотите удалить данную запись? (${card.id.split('-')[1]})`)) return
@@ -494,7 +483,7 @@ export const personalSections = { //ok
             })
         }))
     },
-    fetch : async function(state){
+    fetch : async function(state){ //ф-я отправки пост-запроса на сервер с получением данных определенног раздела
         return await fetch(document.location.href, {
             method: 'POST',
             headers: {
@@ -507,7 +496,7 @@ export const personalSections = { //ok
             })
         })
     },
-    checks : function(option, bodyPersonal, state=null, data=null){
+    checks : function(option, bodyPersonal, state=null, data=null){ //ф-я проверки состояния пришедших с сервера данных
         switch(option){
             case 'auth':
                 if(!SS.getItem(sessionKeys.userHash) || !SS.getItem(sessionKeys.loggedIn)){ 
@@ -581,7 +570,7 @@ export const personalSections = { //ok
             `)
         }
     },
-    personalAsideBook : {
+    personalAsideBook : { //ф-я заполнения раздела "Мои книги"
         tab: 'js-section-personal-book',
         id: 'body-personal-books',
         panelTitle: 'книги',
@@ -602,7 +591,7 @@ export const personalSections = { //ok
             })
         }
     },
-    personalAsideNote : {
+    personalAsideNote : { //ф-я заполнения раздела "Мои заметки"
         tab: 'js-section-personal-note',
         id : 'body-personal-notes',
         panelTitle: 'заметки',
@@ -620,7 +609,7 @@ export const personalSections = { //ok
             .catch(() => personalSections.checks('error', bodyPersonal))
         }
     },
-    refill : async function(personalState=null, array=null, lengthRequest=null){
+    refill : async function(personalState=null, array=null, lengthRequest=null){ //ф-я перезаполнения разделов в ЛК
         const body = document.getElementById('js-body-personal')
         const state = personalState?.split('-')[3] ?? SS.getItem(sessionKeys.personalState)?.split('-')[3]
         body.innerHTML = ''
@@ -637,10 +626,10 @@ export const personalSections = { //ok
             })
     }
 }
-export const adminPanelSection = { //ok
+export const adminPanelSection = { //ok //объект панели администратора
     posts: {
         id: 'all-posts',
-        body: async function(bodyPersonal){ 
+        body: async function(bodyPersonal){ //ф-я заполнения панели администраора данными с сервера
             if(!SS.getItem(sessionKeys.role) || !SS.getItem(sessionKeys.loggedIn)){
                 bodyPersonal.insertAdjacentHTML("beforeend", `
                 <div style="
@@ -684,7 +673,7 @@ export const adminPanelSection = { //ok
             })
             document.getElementById(ID.inputSearchPost).addEventListener('change', e => searchPostWhenInputChange(e.target, document.getElementById(ID.allAdminsPost)))
         },
-        refill: async function(array=null, lengthRequest=null){
+        refill: async function(array=null, lengthRequest=null){ //ф-я перезаполнения панели администора данными с сервера
             document.getElementById(ID.allAdminsPost).innerHTML = ""
             await fetchJsonPostToServer()
                 .then(result => result.json())
@@ -703,7 +692,7 @@ export const adminPanelSection = { //ok
     }
 }
 //=======================================================
-export function checkEmptyInput(logInput, passInput, login, password){
+export function checkEmptyInput(logInput, passInput, login, password){ //ф-я проверки валидности введенных данных для авторизации
     if(!login && !password) {   
         logInput.classList.add('js-warning')
         passInput.classList.add('js-warning')
@@ -719,12 +708,12 @@ export function checkEmptyInput(logInput, passInput, login, password){
     } 
     else return true
 }
-export function inputListener(item){
+export function inputListener(item){ //ф-я удаления предупреждающего класса с input
     let input = item
     input.classList.contains('js-warning') ? input.classList.remove('js-warning') : null
 }
 //=======================================================
-export async function toggleActivePersonalSection(target){
+export async function toggleActivePersonalSection(target){ //ф-я смены активного раздела в ЛК
     const PABook = document.getElementById(ID.personalAsideBook)
     const PANote = document.getElementById(ID.personalAsideNote)
     const panelTitle = document.querySelector(`.${CLASSES.panelTitle}`)
@@ -753,11 +742,11 @@ export async function toggleActivePersonalSection(target){
         
         panelTitle.insertAdjacentElement('beforeend', createHtmlPanelTitle(personalSections.personalAsideNote.panelTitle))
     }
-}
-export function setCurrentStatePersonal(currentState){
+} 
+export function setCurrentStatePersonal(currentState){ //ф-я сохранения активного раздела в Лк
    SS.setItem(sessionKeys.personalState, currentState.id)
-}
-export function getCurrentStatePersonal(){
+} 
+export function getCurrentStatePersonal(){ //ф-я получения активного раздела в ЛК
     const currentItem = SS.getItem(sessionKeys.personalState)
     const panelTitle = document.querySelector(`.${CLASSES.panelTitle}`)
 
@@ -772,13 +761,11 @@ export function getCurrentStatePersonal(){
         }
     })
 }
-//=======================================================
-export function openPopup(target, parent){
+export function openPopup(target, parent){ //ф-я открытия модального окна
     createBackdrop(parent)
     createPopup(target.id, parent)
 }
-//=======================================================
-export function addDragListener(id){ 
+export function addDragListener(id){ //ф-я создания обработчиков события dragNDrop для элементов загрузки книг и обложек
     if(id === ID.popupBook){
         const uploadCover = document.getElementById(ID.uploadCoverBlock)
         const uploadBook = document.getElementById(ID.uploadBookBlock)
@@ -871,8 +858,8 @@ export function addDragListener(id){
         })
     }
 }
-const DAD = {
-    html : function(type, input){
+const DAD = { //объект событий и элементов dragNDrop
+    html : function(type, input){ //ф-я возврата шаблона загруженного файла
         return `
             <div class="loaded" id="loaded-${type}">
                 <div class="loaded__image"><img src="img/icons/file.svg" alt="file icon"></div>
@@ -883,7 +870,7 @@ const DAD = {
             </div>
     `
     },
-    removeAndInsert : function(type, container, form, input){
+    removeAndInsert : function(type, container, form, input){ //ф-я удаления объекта dragNDrop и замена его на объект загруженного файла
         if(type === 'book' || type === 'note' || type === 'post'){
             // form.removeChild(container)
             container.style.display = 'none'
@@ -895,7 +882,7 @@ const DAD = {
             form.lastElementChild.firstElementChild.insertAdjacentHTML('beforeend', this.html(type, input))
         }
     },
-    listeners : function(type, form, container){
+    listeners : function(type, form, container){ //ф-я создания обработчиука событий на кнопку удаления загруженного файла
         let parent = document.querySelector(`#loaded-${type}`)
         parent.querySelector('#delete-loaded-btn').addEventListener('click', e => {
             if(type === 'book' || type === 'note' || type === 'post'){
@@ -917,14 +904,14 @@ const DAD = {
             }
         })
     }, 
-    start : function(type, container, form, input){
+    start : function(type, container, form, input){ //ф-я запуска скриптов объекта на активной форме
         const formEl = document.getElementById(form)
 
         this.removeAndInsert(type, container, formEl, input)
         this.listeners(type, formEl, container)
     }
 }
-function fillInputsAfterUploadBook(inputUploadBook){
+function fillInputsAfterUploadBook(inputUploadBook){ //ф-я автоматического заполнения полей "автор" и "наименование" после загрузки книги
     const reader = new FileReader()
     let encode = null
     reader.addEventListener('loadend', ()=> {
@@ -946,16 +933,16 @@ function fillInputsAfterUploadBook(inputUploadBook){
     
 }
 //=======================================================
-export function burgerMenuClick(){
+export function burgerMenuClick(){ //ф-я проверки состояния бургер меню
     opened ? closeMenu('button') : openMenu(returnElementForBurgerMenu())
 }
 //=======================================================
-export function returnBMLValue(changeState){
+export function returnBMLValue(changeState){//ф-я изменения состояния бургер меню
     if(changeState) bmL = changeState 
     else return bmL
 }
 //=======================================================
-export function checkAndInstallIconAccount(){ 
+export function checkAndInstallIconAccount(){  //ф-я проверки состояния авторизации пользователя и смена интерфейса
     const linkLogin = document.querySelector('[href="/login"]')
      
     if(SS.getItem(sessionKeys.loggedIn) === 'true') {
@@ -973,7 +960,7 @@ export function checkAndInstallIconAccount(){
         linkLogin.innerText = `Войти`
     }
 }
-export async function loginOrRegister(form, loginInput, passwordInput, event){ //ok
+export async function loginOrRegister(form, loginInput, passwordInput, event){ //ok //ф-я авторизации и регистрации
     let logInput = form.elements[loginInput]
     let passInput = form.elements[passwordInput]
 
@@ -1052,7 +1039,7 @@ export async function loginOrRegister(form, loginInput, passwordInput, event){ /
     }
 }
 //=======================================================
-async function deletePost(idAndTitle){
+async function deletePost(idAndTitle){ //ф-я удаления постов в панели администратора
     const splitted = idAndTitle.split('-')
     const title = splitted[1]
     const id = splitted[0]
@@ -1065,7 +1052,7 @@ async function deletePost(idAndTitle){
     document.getElementById(ID.inputSearchPost).value = ''
 }
 //======================================================= 
-export async function searchPostWhenInputChange(input, body){ 
+export async function searchPostWhenInputChange(input, body){  //ф-я поиска элемента в разделах "Мои книги" и "Мои заметки" в ЛК
     const posts = body.children
     const postsId = []
     let lengthRequest = null
@@ -1099,7 +1086,7 @@ export async function searchPostWhenInputChange(input, body){
         lazyLoading()
     }
 }
-function returnContainRequestId(post){
+function returnContainRequestId(post){ //ф-я возврата совпадающего с поиском id 
     const id = post.id.split('-')[0]
     const bodyPost = post.children[0]
 
@@ -1108,7 +1095,7 @@ function returnContainRequestId(post){
     return Number(id)
 }
 //======================================================= 
-export function fillBlog({link_image, author, title, description, id_post}, id){
+export function fillBlog({link_image, author, title, description, id_post}, id){//ф-я заполнения блога постами
     document.getElementById(id).insertAdjacentHTML('beforeend',`
     <div class="blog__post post" id="${id_post}-${title.toUpperCase()}">
         <div class="post__body">
@@ -1124,7 +1111,7 @@ export function fillBlog({link_image, author, title, description, id_post}, id){
     ) 
 }
 //=======================================================
-async function fetchJsonAuthPostToServer(login, password){
+async function fetchJsonAuthPostToServer(login, password){ //ф-я отправки пост-запроса на сервер для авторизации и регистрации
     return await fetch(`${document.location.href}`, {
         method: 'POST',
         headers: {
@@ -1136,7 +1123,7 @@ async function fetchJsonAuthPostToServer(login, password){
         })
     })
 }
-export async function fetchJsonPostToServer(action=null, id=null, title=null){
+export async function fetchJsonPostToServer(action=null, id=null, title=null){ //ф-я отправки пост-запроса на сервер для совершения некоторых действий с элементами в ЛК
     return await fetch(`${document.location.href}`, {
         method: 'POST',
         headers: {
@@ -1150,7 +1137,7 @@ export async function fetchJsonPostToServer(action=null, id=null, title=null){
     })
 }
 //=======================================================
-export function createPopupAndBackdropToShowMessage(code){
+export function createPopupAndBackdropToShowMessage(code){ //ф-я создания модального окна 
     document.querySelector('#root').insertAdjacentHTML('beforeend', createHtmlPopup(code))
     document.getElementById('message-popup-close').addEventListener('click', e => {
         e.target.parentNode.parentNode.removeChild(e.target.parentNode)
@@ -1171,7 +1158,7 @@ export function createPopupAndBackdropToShowMessage(code){
     document.body.style.overflow = 'hidden'
     addListenerBackdrop(document.getElementById('backdrop'), "#root")
 }
-export function createPopupAndBackdropToShowMessageForCaptcha(code){
+export function createPopupAndBackdropToShowMessageForCaptcha(code){//ф-я создания модального окна с captcha
     document.querySelector('#root').insertAdjacentHTML('beforeend', createHtmlPopup(code))
     const backdrop  = document.createElement('div')
     backdrop.id = 'backdrop'
@@ -1187,7 +1174,7 @@ export function createPopupAndBackdropToShowMessageForCaptcha(code){
     document.body.style.overflow = 'hidden'
 }
 //=======================================================
-async function deleteOrRead(action, card, state){ //?
+async function deleteOrRead(action, card, state){ //? //ф-я удаления и изменения категгории объекта в ЛК
     const id = card.id.split('-')[0]
     const title = card.id.split('-')[1]
 
@@ -1205,8 +1192,7 @@ async function deleteOrRead(action, card, state){ //?
         })
     })
 }
-//!====================FIREBASE==========================
-function readFileAsync(file, type) { //ok
+function readFileAsync(file, type) { //ok //ф-я асинхронного чтения файла
     return new Promise((resolve, reject) => {
       let reader = new FileReader()
       reader.onloadend = () => resolve(reader.result) 
@@ -1215,8 +1201,8 @@ function readFileAsync(file, type) { //ok
       if(type === 'cover') reader.readAsDataURL(file)
     })
 }
-//=======================================================
-async function addNewDataToDatabase(id, data){  //ok 3/3n
+//!====================FIREBASE==========================
+async function addNewDataToDatabase(id, data){  //ok 3/3n //ф-я создания и отправки объектов на сервер с помощью пост-запросов для добавления джанных в базу данных
     let rate, author, title, note, post, cover
     // let URLCoverString
     let type
@@ -1236,22 +1222,6 @@ async function addNewDataToDatabase(id, data){  //ok 3/3n
                 let urlImageBase64 = new DOMParser().parseFromString(book, 'text/xml').getElementsByTagName('binary')[0]?.childNodes[0].nodeValue.replace(/(\r\n|\n|\r)/gm, "") ?? '(none)'+noneImage.split(',')[1]
                 urlImageBase64 = `data:image/jpeg;base64,${urlImageBase64}`
                 bookData.cover = urlImageBase64
-
-                // let imageURL = new URL(`https://lexica.art/api/v1/search`)
-             
-                // const sourceLang = 'ru'
-                // const targetLang = 'en'
-                // const sourceText = `${bookTitle.value} ${bookAuthor.value}`
-                // const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURI(sourceText)}`
-                // await fetch(url)
-                //     .then(data => data.json())
-                //     .then(([[[result]]]) => imageURL.searchParams.set('q', result))
-                //     .catch(e => console.log(e))
-                
-                // await fetch(imageURL)
-                //     .then(data => data.json())
-                //     .then(({images}) => URLCoverString = images[Math.floor(Math.random() * 50)].src)
-                //     .catch(e => console.log(e))
                 
             } else {
                 let urlImageBase64 = await readFileAsync(bookCover.files[0], 'cover')
@@ -1337,7 +1307,7 @@ async function addNewDataToDatabase(id, data){  //ok 3/3n
 
     return
 }
-async function fetchPostToStorage({type, bookData, rate, post, cover, title, author, note, user_hash}){ //ok
+async function fetchPostToStorage({type, bookData, rate, post, cover, title, author, note, user_hash}){ //ok //ф-я отправки пост-запроса на сервер для добавления данных в базу данных
     let formData = new FormData()
 
     formData.set('type', type)
@@ -1358,7 +1328,7 @@ async function fetchPostToStorage({type, bookData, rate, post, cover, title, aut
     
 }
 //!====================FIREBASE==========================
-function sortElements(a, b){
+function sortElements(a, b){ //ф-я определения порядка сортировки элементов 
     let state = document.getElementById(ID.filterForAllElems).value
     if(state == 'd') return 0
     if(state == 't')
@@ -1369,7 +1339,7 @@ function sortElements(a, b){
         if ((a?.note_state ?? a?.book_state) > (b?.note_state ?? b?.book_state)) return -1
 }
 //=======================================================
-export function showWarningMessage(state){
+export function showWarningMessage(state){ //ф-я отображения предупреждающих сообщений для авторизованных желающих повторно авторизоваться
     if(state === 'login' || state === 'reg') {
         if(SS.getItem('user-hash')) {
             checkAndInsertMessageToRoot('Для продолжения необходимо разлогониться')
@@ -1384,7 +1354,7 @@ export function showWarningMessage(state){
     }
     return false
 }
-function checkAndInsertMessageToRoot(message){
+function checkAndInsertMessageToRoot(message){ //ф-я вставки предупреждающего сообщения в шаблон
     const root = document.getElementById('root')
     const div = document.createElement('div')
     div.style.cssText = `
@@ -1399,7 +1369,7 @@ function checkAndInsertMessageToRoot(message){
     root.insertAdjacentElement('beforeend', div)
 }
 //=======================================================
-export function createIconForExit(){
+export function createIconForExit(){ //ф-я создания кнопки выхода из аккаунта
     const icon = document.createElement('div')
     const img  = document.createElement('img')
     icon.classList.add('exit-icon')
@@ -1418,7 +1388,7 @@ export function createIconForExit(){
     document.querySelector('.wrapper').insertAdjacentElement('beforeend', icon)
 }
 //=======================================================
-export function fetchToExitDate(){
+export function fetchToExitDate(){ //ф-я сохранения времени выхода из аккаунта
     return fetch('/exitDate', {
         method: 'POST',
         headers: {
@@ -1430,7 +1400,7 @@ export function fetchToExitDate(){
     })
 }
 //=======================================================
-export function calcPositionModal(){
+export function calcPositionModal(){ //ф-я определения позиции распаолодения модального окна на странице чтения книги
     let {top, height} = document.body.getBoundingClientRect()
     top = Math.abs(top)
     return [top, top+(height/2)]

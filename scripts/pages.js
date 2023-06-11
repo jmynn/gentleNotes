@@ -1,4 +1,4 @@
-export function ErrorPage(){
+export function ErrorPage(){ //шаблон страницы "Error"
     return `
     <div class="error">
         ERROR
@@ -6,7 +6,7 @@ export function ErrorPage(){
     </div>
     `
 }
-export function Main(){
+export function Main(){ //шаблон страницы "Главная"
     return `
                <div class="main">
                 <div class="main__row">
@@ -41,7 +41,7 @@ export function Main(){
                </div>
     `
 }
-export function Login(){
+export function Login(){ //шаблон страницы "Авторизация"
     return `
     <div class="auth">
                 <form action="#" class="auth__form form" name="logForm">
@@ -56,7 +56,7 @@ export function Login(){
             </div>
     `
 }
-export function Developer(){
+export function Developer(){ //шаблон страницы "Авторизация админа"
     return `
     <div class="auth-admin">
         <form action="#" class="auth-admin__form form" name="adminForm">
@@ -67,7 +67,7 @@ export function Developer(){
     </div>
     `
 }
-export function Register(){
+export function Register(){ //шаблон страницы "Регистрация"
     return `
     <div class="reg-container" id="reg-container">
     <div class="reg">
@@ -80,7 +80,7 @@ export function Register(){
 </div>
     `
 }
-export function Personal(){
+export function Personal(){ //шаблон страницы "Личный кабинет"
     return `
         <div class="personal">
             <div class="personal__row">
@@ -146,20 +146,20 @@ export function Personal(){
     `
 }
 //!
-export function Blog(){
+export function Blog(){ //шаблон страницы "Наш блог"
     return `
     <div class="blog" id="blog">
     </div>
     `
 }
-export function AdminPanel(){
+export function AdminPanel(){ //шаблон страницы "Панель администратора"
     return`
        <div class="adminpanel" id="admin-panel-add-post">
         
        </div>
     `
 }
-export function JL(){
+export function JL(){ //шаблон страницы "Журнал посещений"
     return `
         <div class="jl">
             <div class="thead">::Журнал посещений</div>

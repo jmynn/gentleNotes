@@ -1,4 +1,4 @@
-export async function jl(){
+export async function jl(){ //ф-я отображения журнала посещений
     await fetch('/jl', {
         method: 'POST', 
         headers: {'Content-Type': 'application/json;charset=utf-8'},
@@ -42,7 +42,7 @@ export async function jl(){
         jl.insertAdjacentElement('beforeend', div)
     })
 }
-function msToTime(duration) {
+function msToTime(duration) { //ф-я форматирования миллисекунд в привычный формат даты и времени
     var milliseconds = parseInt((duration % 1000) / 100),
       seconds = parseInt((duration / 1000) % 60),
       minutes = parseInt((duration / (1000 * 60)) % 60),
