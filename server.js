@@ -67,7 +67,7 @@ app.post('/login', jsonParser, async (req, res) => { //ok //сверка при�
 }) 
 app.post('/register', jsonParser, async (req, res) => { //ok //проверка на то, что такого пользователя не существует. создание индивидуального хранилища, занесение данных в БД
     const {login, password} = req.body
-
+    const enterDate = +Date.now()
     if(login === undefined || password === undefined) return
     
     await searchRequest(login, password)
@@ -91,11 +91,11 @@ app.post('/register', jsonParser, async (req, res) => { //ok //проверка 
             return [stateObject]
         })
         .then(async ([finalStateObject, hash=null]) => {
-            let {recordset} = await new sql.Request()
-            .query(`select [user_role],[user_hash] from users where [user_hash]='${hash}'`) 
+            let {recordset} = await new sql.Request().query(`select [u_id], [user_role],[user_hash] from users where [user_hash]='${hash}'`) 
             finalStateObject.data = recordset[0]
 
             await checkAndCreateFolderForUserInStorage(hash) 
+            await new sql.Request().query(`insert into users_log ([u_id], [user_enterDate], [user_exitDate], [user_differentTime]) values (${recordset[0].u_id}, ${enterDate}, ${0}, ${0})`) 
 
             res.status(200).send(finalStateObject)
         })
