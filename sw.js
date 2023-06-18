@@ -1,20 +1,20 @@
 const staticCacheName = 's-app-v1'
 const dynamicCacheName = 'd-app-v1'
 
-const assetUrls = [ //кешируемые файлы
+const assetUrls = [
   'index.html',
   '/js/route.js',
   '/js/script.js',
   '/css/style.css',
-  '/offline.html'
+  'offline.html'
 ]
 
-self.addEventListener('install', async event => { //установка нового воркера
+self.addEventListener('install', async event => {
   const cache = await caches.open(staticCacheName)
   await cache.addAll(assetUrls)
 })
 
-self.addEventListener('activate', async event => { //остановка старого воркера, активация нового
+self.addEventListener('activate', async event => {
   const cacheNames = await caches.keys()
   await Promise.all(
     cacheNames
@@ -24,8 +24,9 @@ self.addEventListener('activate', async event => { //остановка стар
   )
 })
 
-self.addEventListener('fetch', event => { //получение ресурса из сети, который не был найден в кеше
+self.addEventListener('fetch', event => {
   const {request} = event
+
   const url = new URL(request.url)
   if (url.origin === location.origin) {
     event.respondWith(cacheFirst(request))
@@ -35,12 +36,12 @@ self.addEventListener('fetch', event => { //получение ресурса и
 })
 
 
-async function cacheFirst(request) { //поиск в кеше, если нет - запрос к сети
+async function cacheFirst(request) {
   const cached = await caches.match(request)
-  return cached ?? await networkFirst(request)
+  return cached ?? await fetch(request)
 }
 
-async function networkFirst(request) { //запрос на получение актуальных файлов
+async function networkFirst(request) {
   const cache = await caches.open(dynamicCacheName)
   try {
     const response = await fetch(request)

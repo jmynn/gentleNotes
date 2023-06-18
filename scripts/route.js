@@ -91,8 +91,17 @@ const handleLocation = async () => { //ф-я загрузки интерфейс
     //================blog=======================================
     if(path === '/blog'){ 
         await fetchJsonPostToServer()
-        .then(result => result.json())
+        .then(result => { console.log(4857348573450345)
+            try{
+                return result.json()
+            } catch(e){
+                console.log(result)
+                document.getElementById(ID.blogContainer).insertAdjacentHTML(result)
+                throw `нет сети`
+            }
+        })
         .then(data => Array.from(data.recordset).forEach(post => fillBlog(post, ID.blogContainer)))
+        .catch(err => console.log(2222222))
 
         lazyLoading()
     }

@@ -51,14 +51,14 @@ app.post('/login', jsonParser, async (req, res) => { //ok //сверка при�
     const enterDate = +Date.now()
     const {login, password} = req.body
     try{
-        const {recordset} = await new sql.Request()
-        .query(`select [u_id], [user_hash], 
-        [user_role] from users where [user_hash]='${md5(`${login}${password}`)}'`) //? 
-        const {u_id} = recordset[0]
+        const {recordset} = await new sql.Request().query(`select [u_id], [user_hash], [user_role] from users where [user_hash]='${md5(`${login}${password}`)}'`) //? 
+        const {u_id, user_role} = recordset[0]
 
-        await new sql.Request()
-        .query(`insert into users_log ([u_id], [user_enterDate], 
-            [user_exitDate], [user_differentTime]) values (${u_id}, ${enterDate}, ${0}, ${0})`) 
+        if(user_role == 'admin'){
+            res.status(200).send(recordset)
+            return
+        }
+        await new sql.Request().query(`insert into users_log ([u_id], [user_enterDate], [user_exitDate], [user_differentTime]) values (${u_id}, ${enterDate}, ${0}, ${0})`) 
         res.status(200).send(recordset)
     }
     catch(err){

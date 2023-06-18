@@ -78,6 +78,15 @@ export const CLASSES = { //список намиенований классов
     'personalAside' : 'js-aside-personal',
     'panelTitle' : 'panel__title'
 }
+export const dataAttribures = {
+    'rateNote' : 'rateNote',
+    'rateBook' : 'rateBook',
+    'buttonNoteDelete' : 'buttonNoteDelete',
+    'buttonNoteRead' : 'buttonNoteRead',
+    'buttonBookDelete' : 'buttonBookDelete',
+    'buttonBookRead' : 'buttonBookRead',
+    'isActive' : 'isActive'
+}
 //заглушка вместо обложек
 const noneImage = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjZCMDI2RjU4MjcxRDExRTFBNUIxQTIwMEI5NEE1NEZBIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjZCMDI2RjU5MjcxRDExRTFBNUIxQTIwMEI5NEE1NEZBIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NkIwMjZGNTYyNzFEMTFFMUE1QjFBMjAwQjk0QTU0RkEiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NkIwMjZGNTcyNzFEMTFFMUE1QjFBMjAwQjk0QTU0RkEiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6Ri9sqAAAMa0lEQVR42uzdzXXT6B7A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`
 //!=======================================================
@@ -973,6 +982,16 @@ export async function loginOrRegister(form, loginInput, passwordInput, event){ /
         .then(res => res.json())
         .then(([data]) => { 
             if(!data) throw new Error()
+            if(data.user_role == 'admin'){
+                SS.getItem(sessionKeys.personalState) ? SS.removeItem(sessionKeys.personalState) : null
+                SS.setItem(sessionKeys.loggedIn, 'true')
+                SS.setItem(sessionKeys.userHash, data.user_hash)
+                SS.setItem(sessionKeys.role, 'admin')
+                
+                window.history.pushState({}, "", '/adminpanel')
+                window.history.go()
+                return
+            }
             SS.getItem(sessionKeys.personalState) ? SS.removeItem(sessionKeys.personalState) : null
             SS.setItem(sessionKeys.loggedIn, 'true')
             SS.setItem(sessionKeys.userHash, data.user_hash)
@@ -1048,7 +1067,10 @@ async function deletePost(idAndTitle){ //ф-я удаления постов в 
 
     await fetchJsonPostToServer('deletePost', id, title)
         .then(response => (response.status === 400) ? createPopupAndBackdropToShowMessage('register-error') : createPopupAndBackdropToShowMessage('successful-deleted-post'))
-        .then(async () => await adminPanelSection.posts.refill()) //? проверить на ошибки при рефиле
+        .then(async () => {
+            await adminPanelSection.posts.refill()
+            lazyLoading()
+        }) //? проверить на ошибки при рефиле
     document.getElementById(ID.inputSearchPost).value = ''
 }
 //======================================================= 
